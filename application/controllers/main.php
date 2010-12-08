@@ -100,6 +100,21 @@ class Main_Controller extends Template_Controller {
 		
 	}
 
+	/**
+	 * Retrieves Categories
+	 */
+	protected function get_categories($selected_categories)
+	{
+	  $categories = ORM::factory('category')
+	    ->where('category_visible', '1')
+	    ->where('parent_id', '0')
+	    ->where('category_trusted != 1')
+	    ->orderby('category_title', 'ASC')
+	    ->find_all();
+
+	  return $categories;
+	}
+
     public function index()
     {
         $this->template->header->this_page = 'home';
@@ -280,7 +295,7 @@ class Main_Controller extends Template_Controller {
 
 		$db = new Database();
         // Next, Get the Range of Years
-		$query = $db->query('SELECT DATE_FORMAT(incident_date, \'%Y-%c\') AS dates FROM incident WHERE incident_active = 1 GROUP BY DATE_FORMAT(incident_date, \'%Y-%c\') ORDER BY incident_date');
+		$query = $db->query('SELECT DATE_FORMAT(incident_date, \'%Y-%c\') AS dates FROM '.$this->table_prefix.'incident WHERE incident_active = 1 GROUP BY DATE_FORMAT(incident_date, \'%Y-%c\') ORDER BY incident_date');
 
 		$first_year = date('Y');
 		$last_year = date('Y');

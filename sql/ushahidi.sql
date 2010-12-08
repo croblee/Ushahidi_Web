@@ -1,5 +1,5 @@
 -- Ushahidi Engine
--- version 39
+-- version 41
 -- http://www.ushahidi.com
 
 
@@ -1332,13 +1332,13 @@ CREATE TABLE IF NOT EXISTS `layer` (                                            
 -- Definition of table `api_settings`
 --
 
-CREATE TABLE  IF NOT EXISTS `api_settings` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `default_record_limit` int(11) NOT NULL DEFAULT '20',
-  `max_record_limit` int(11) DEFAULT NULL,
-  `max_requests_per_ip_address` int(11) DEFAULT NULL,
-  `max_requests_quota_basis` int(11) DEFAULT NULL,
-  `modification_date` datetime NOT NULL,
+CREATE TABLE IF NOT EXISTS `api_settings` (                                         -- table description
+  `id` int(11) NOT NULL AUTO_INCREMENT,	                                            -- field description
+  `default_record_limit` int(11) NOT NULL DEFAULT '20',                             -- field description
+  `max_record_limit` int(11) DEFAULT NULL,                                          -- field description
+  `max_requests_per_ip_address` int(11) DEFAULT NULL,                               -- field description
+  `max_requests_quota_basis` int(11) DEFAULT NULL,                                  -- field description
+  `modification_date` datetime NOT NULL,                                            -- field description
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='For storing API logging settings';
 
@@ -1355,6 +1355,32 @@ CREATE TABLE IF NOT EXISTS `api_banned` (                                       
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='For logging banned API IP addresses' AUTO_INCREMENT=8 ;
 
 
+/**
+* Table structure for table 'alert_category'
+*
+*/
+CREATE TABLE IF NOT EXISTS `alert_category` (
+  `id` int(11) NOT NULL auto_increment,
+  `alert_id` int(11),
+  `category_id` int(11),
+  PRIMARY KEY (`id`),
+  KEY `alert_id` (`alert_id`),
+  KEY `category_id` (`category_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+
+/*
+* Add a trigger to clean up when the alert is deleted
+*/
+
+delimiter |
+
+CREATE TRIGGER ac_cleanup BEFORE DELETE ON `alert`
+  FOR EACH ROW BEGIN
+    DELETE FROM `alert_category` WHERE `alert_id` = OLD.id;
+  END;
+|
+
+delimiter ;
 
 /**
 * Table structure for table `api_log`
@@ -1413,4 +1439,4 @@ ALTER TABLE `form_response`
 * 
 */
 UPDATE `settings` SET `ushahidi_version` = '2.0.1' WHERE `id`=1 LIMIT 1;
-UPDATE `settings` SET `db_version` = '40' WHERE `id`=1 LIMIT 1;
+UPDATE `settings` SET `db_version` = '41' WHERE `id`=1 LIMIT 1;
